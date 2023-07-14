@@ -24,6 +24,20 @@ export async function resetPasswordValidation(values) {
   return errors;
 }
 
+// * Validate Register Form
+export async function registerValidation(values) {
+  const errors = usernameVerify({}, values);
+  passwordVerify(errors, values);
+  emailVerify(errors, values);
+  return errors;
+}
+
+// * Validate Profile Page
+export async function profileValidation(values) {
+  const errors = emailVerify({}, values);
+  return errors;
+}
+
 // **************************************************
 
 // * Validate Password
@@ -55,5 +69,18 @@ function usernameVerify(error = {}, values) {
   } else if (values.username.length < 8) {
     error.username = toast.error("Username Cannot Be Less Than 8 Characters");
   }
+  return error;
+}
+
+// * Validate Email
+function emailVerify(error = {}, values) {
+  if (!values.email) {
+    error.email = toast.error("Email Required!");
+  } else if (values.email.includes(" ")) {
+    error.email = toast.error("Wrong Email!");
+  } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
+    error.email = toast.error("Invalid Email Address!");
+  }
+
   return error;
 }
