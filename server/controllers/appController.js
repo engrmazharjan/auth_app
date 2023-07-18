@@ -157,7 +157,29 @@ export async function login(req, res) {
 
 /* GET: http://localhost:8080/api/user/example123 */
 export async function getUser(req, res) {
-  res.json("Get User Route");
+  const { username } = req.params;
+
+  try {
+    if (!username) {
+      return res.status(501).send({ error: "Invalid Username" });
+    }
+
+    const user = await UserModel.findOne({ username })
+      .select("-password")
+      .lean();
+
+    if (!user) {
+      return res.status(501).send({ error: "User Not Found" });
+    }
+
+    /** Remove password from user */
+    /** mongoose return unnecessary data with object so convert it into json */
+    // const { password, ...rest } = Object.assign({}, user.toJSON());
+
+    return res.status(201).send(user);
+  } catch (error) {
+    return res.status(404).send({ error: "Cannot Find User Data" });
+  }
 }
 
 /** PUT: http://localhost:8080/api/updateuser 
