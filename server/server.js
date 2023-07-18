@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import connect from "./database/connection.js";
+import router from "./router/route.js";
 
 const app = express();
 
@@ -17,6 +18,9 @@ const port = 8080;
 app.get("/", (req, res) => {
   res.send("Hello World! / Home GET Request");
 });
+
+/* API Routes */
+app.use("/api", router);
 
 /* Start Server Only When We Have Valid Connection */
 connect()
