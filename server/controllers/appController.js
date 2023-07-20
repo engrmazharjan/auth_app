@@ -258,5 +258,40 @@ export async function createResetSession(req, res) {
 /* Update the password when we have valid session */
 /* PUT: http://localhost:8080/api/resetPassword */
 export async function resetPassword(req, res) {
-  res.json("ResetPassword Route");
+  try {
+    if (!req.app.locals.resetSession) {
+      return res.status(440).send({ error: "Session Expired" });
+    }
+
+    const { username, password } = req.body;
+
+    // Input validation
+    // if (!username || !password) {
+    //   return res.status(400).send({
+    //     error: "Missing Fields. Please Provide Username, And Password",
+    //   });
+    // }
+
+    const user = await UserModel.findOne({ username });
+
+    if (!user) {
+      return res.status(404).send({ error: "Username Not Found." });
+    }
+
+    // Hash the password using bcrypt
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Update the user's password
+    await UserModel.updateOne(
+      { username: user.username },
+      { password: hashedPassword }
+    );
+
+    // Reset session (using req.app.locals)
+    req.app.locals.resetSession = false;
+
+    return res.status(200).send({ msg: "Password Reset Successful" });
+  } catch (error) {
+    return res.status(401).send({ error });
+  }
 }
