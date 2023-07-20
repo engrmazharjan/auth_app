@@ -36,8 +36,6 @@ export async function register(req, res) {
   try {
     const { username, password, profile, email } = req.body;
 
-    console.log(username, password, profile, email);
-
     // Check the existing username
     const existingUsername = new Promise((resolve, reject) => {
       UserModel.findOne({ username }, (err, user) => {
@@ -177,7 +175,7 @@ export async function getUser(req, res) {
     /** Remove password from user */
     /** mongoose return unnecessary data with object so convert it into json */
     // const { password, ...rest } = Object.assign({}, user.toJSON());
-    console.log("Let's see", user);
+
     return res.status(201).send(user);
   } catch (error) {
     return res.status(404).send({ error: "Cannot Find User Data" });
@@ -197,16 +195,17 @@ body: {
 */
 export async function updateUser(req, res) {
   try {
-    const id = req.query.id;
+    // const id = req.query.id;
+    const { userId } = req.user;
 
-    if (!id) {
+    if (!userId) {
       return res.status(401).send({ error: "User Not Found" });
     }
 
     const body = req.body;
 
     // Update the data using async/await
-    const updatedUser = await UserModel.updateOne({ _id: id }, body);
+    const updatedUser = await UserModel.updateOne({ _id: userId }, body);
 
     if (updatedUser) {
       return res.status(201).send({ msg: "Record Updated" });
