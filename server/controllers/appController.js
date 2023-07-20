@@ -164,11 +164,11 @@ export async function getUser(req, res) {
       return res.status(501).send({ error: "Invalid Username" });
     }
 
-    // const user = await UserModel.findOne({ username })
-    //   .select("-password")
-    //   .lean();
+    const user = await UserModel.findOne({ username })
+      .select("-password")
+      .lean();
 
-    const user = await UserModel.findOne({ username });
+    // const user = await UserModel.findOne({ username });
 
     if (!user) {
       return res.status(501).send({ error: "User Not Found" });
@@ -176,9 +176,9 @@ export async function getUser(req, res) {
 
     /** Remove password from user */
     /** mongoose return unnecessary data with object so convert it into json */
-    const { password, ...rest } = Object.assign({}, user.toJSON());
-
-    return res.status(201).send(rest);
+    // const { password, ...rest } = Object.assign({}, user.toJSON());
+    console.log("Let's see", user);
+    return res.status(201).send(user);
   } catch (error) {
     return res.status(404).send({ error: "Cannot Find User Data" });
   }
@@ -198,21 +198,23 @@ body: {
 export async function updateUser(req, res) {
   try {
     const id = req.query.id;
-    // const { userId } = req.user;
 
-    if (id) {
-      const body = req.body;
-      // Update the data
-      const user = UserModel.updateOne({ _id: id }, body);
-
-      if (user) {
-        return res.status(201).send({ msg: "Record Updated" });
-      }
-    } else {
+    if (!id) {
       return res.status(401).send({ error: "User Not Found" });
     }
+
+    const body = req.body;
+
+    // Update the data using async/await
+    const updatedUser = await UserModel.updateOne({ _id: id }, body);
+
+    if (updatedUser) {
+      return res.status(201).send({ msg: "Record Updated" });
+    } else {
+      return res.status(404).send({ error: "User Not Found" });
+    }
   } catch (error) {
-    return res.status(401).send({ error });
+    return res.status(500).send({ error });
   }
 }
 
