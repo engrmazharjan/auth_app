@@ -3,7 +3,7 @@ const router = Router();
 
 /** Import All Controllers */
 import * as controller from "../controllers/appController.js";
-import Auth from "../middleware/auth.js";
+import Auth, { localVariables } from "../middleware/auth.js";
 
 /* POST Methods */
 router.route("/register").post(controller.register); // Register user
@@ -13,8 +13,10 @@ router.route("/login").post(controller.verifyUser, controller.login); // Login i
 
 /* GET Methods */
 router.route("/user/:username").get(controller.getUser); // User with username
-router.route("/generateOPT").get(controller.generateOTP); // Generate random OTP
-router.route("/verifyOPT").get(controller.verifyOTP); // Verify generated OTP
+router
+  .route("/generateOTP")
+  .get(controller.verifyUser, localVariables, controller.generateOTP); // Generate random OTP
+router.route("/verifyOTP").get(controller.verifyOTP); // Verify generated OTP
 router.route("/createResetSession").get(controller.createResetSession); // Reset All the variables
 
 /* PUT Methods */
