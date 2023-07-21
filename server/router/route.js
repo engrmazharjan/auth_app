@@ -9,7 +9,9 @@ import Auth, { localVariables } from "../middleware/auth.js";
 /* POST Methods */
 router.route("/register").post(controller.register); // Register user
 router.route("/registerMail").post(registerMail); // Send the email
-router.route("/authenticate").post((req, res) => res.end()); // Authenticate
+router
+  .route("/authenticate")
+  .post(controller.verifyUser, (req, res) => res.end()); // Authenticate
 router.route("/login").post(controller.verifyUser, controller.login); // Login in app
 
 /* GET Methods */
@@ -17,7 +19,7 @@ router.route("/user/:username").get(controller.getUser); // User with username
 router
   .route("/generateOTP")
   .get(controller.verifyUser, localVariables, controller.generateOTP); // Generate random OTP
-router.route("/verifyOTP").get(controller.verifyOTP); // Verify generated OTP
+router.route("/verifyOTP").get(controller.verifyUser, controller.verifyOTP); // Verify generated OTP
 router.route("/createResetSession").get(controller.createResetSession); // Reset All the variables
 
 /* PUT Methods */
